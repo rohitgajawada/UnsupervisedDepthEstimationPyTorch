@@ -6,21 +6,17 @@ dset_choices = ['cifar10', 'kitti']
 reporttype_choices = ['acc', 'error']
 # Criterion to train the network
 criterion_choices = ['nllLoss','tripletmargin', 'mse', 'hingeEmbedding', 'kldiv']
-# Optimizer choices 
+# Optimizer choices
 optim_choices = ['sgd','adam','adagrad', 'adamax', 'adadelta']
 # Learning rate schedules
 lrscheduler_choices = ['decayscheduler', 'imagenetscheduler']
 # Model to train
-model_def_choices = ['alexnet','googlenet', 'googlenet_expanded',
-                    'mobilenet',
-                    'resnet18',
-                    'squeezenet','densenet',]
+model_def_choices = ['stereonet']
 
 def myargparser():
     parser = argparse.ArgumentParser(description='PyTorch Core Training')
 
     parser.add_argument('--dataset', required=True, type=str, choices=dset_choices, help='chosen dataset')
-    parser.add_argument('--nClasses', required=True, type=int, help='chosen dataset')
     parser.add_argument('--data_dir', required=True, type=str, help='chosen data directory')
     parser.add_argument('--verbose', action='store_true')
     parser.add_argument('--workers', default=4, type=int, help='number of data loading workers (default: 4)')

@@ -5,4 +5,4 @@ rm -rf models/layers/__pycache__
 rm *.pyc
 rm datasets/*.pyc
 rm models/*.pyc
-rm newlayers/*.pyc
+rm models/layers/*.pyc
