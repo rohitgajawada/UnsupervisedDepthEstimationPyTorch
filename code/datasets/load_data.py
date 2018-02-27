@@ -1,36 +1,41 @@
+from __future__ import print_function, division
 import os
 import torch
-from torchvision import datasets as dsets
+from skimage import io, transform
+import numpy as np
+import math
+from torch.utils.data import Dataset
 from torchvision import transforms
-import utils
+import scipy.io as sio
 
-"""
-Dataloaders for the CIFAR-10 dataset
-"""
-class LoadCIFAR10():
-	def __init__(self, opt):
-		kwargs = {
-		  'num_workers': opt.workers,
-		  'batch_size' : opt.batch_size,
-		  'shuffle' : True,
-		  'pin_memory': True}
+class KITTIDataset(Dataset):
+    """Face Landmarks dataset."""
 
-		self.train_loader = torch.utils.data.DataLoader(
-			dsets.CIFAR10('../data', train=True, download=True,
-					transform=transforms.Compose([
-						transforms.RandomCrop(32, padding=4),
-						transforms.RandomHorizontalFlip(),
-						transforms.ToTensor(),
-						transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
-std=[x/255.0 for x in [63.0, 62.1, 66.7]])
-					   ])),
-			 **kwargs)
+    def __init__(self, opt, root_dir, transform=None):
+        """
+        Args:
+            opt (string): Specify train/ test.
+            root_dir (string): Directory with all the images.
+            transform (callable, optional): Optional transform to be applied
+                on a sample.
+        """
 
-		self.val_loader = torch.utils.data.DataLoader(
-			dsets.CIFAR10('../data', train=False,
-			  transform=transforms.Compose([
-						   transforms.ToTensor(),
-						   transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
-std=[x/255.0 for x in [63.0, 62.1, 66.7]])
-					   ])),
-		  **kwargs)
+        self.opt = opt
+        self.root_dir = root_dir
+        self.transform = transform
+        self.images1 = pandas.something # TODO
+        self.images2 = pandas.something #TODO
+
+    def __getitem__(self, idx)
+        img1_name = os.path.join(self.root_dir, self.opt,
+                                'image_2', self.images1.iloc[idx, 0])
+        img2_name = os.path.join(self.root_dir, self.opt,
+        						'image_3', self.images2.iloc[idx, 0])
+        image1 = io.imread(img1_name)
+        image2 = io.imread(img2_name)
+        sample = {'image1': image1, 'image2': image2}
+
+        if self.transform:
+            sample = self.transform(sample)
+
+        return sample
