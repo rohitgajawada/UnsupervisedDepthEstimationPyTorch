@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import models.stereonet as stereonet
+import models.combnet as combnet
 
 import utils
 import os
@@ -63,8 +63,8 @@ def load_model(opt):
     if opt.pretrained_file != "":
         model = torch.load(opt.pretrained_file)
     else:
-        if opt.model_def == 'stereonet':
-            model = stereonet.Net()
+        if opt.model_def == 'combnet':
+            model = combnet.Net()
             if opt.cuda:
                 model = model.cuda()
 

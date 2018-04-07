@@ -125,15 +125,7 @@ def weights_init(model, opt):
     Perform weight initializations
     """
     for m in model.modules():
-        if isinstance(m, nn.Conv2d):
-            nn.init.kaiming_normal(m.weight.data, mode='fan_out')
+        if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+            nn.init.xavier_uniform(m.weight.data)
             if m.bias is not None:
-                init.constant(m.bias, 0)
-        elif isinstance(m, nn.BatchNorm2d):
-            if m.affine == True:
-                init.constant(m.weight, 1)
-                init.constant(m.bias, 0)
-        elif isinstance(m, nn.Linear):
-            c =  math.sqrt(2.0 / m.weight.data.size(1));
-            if m.bias is not None:
-                init.constant(m.bias, 0)
+                m.bias.data.zero_()

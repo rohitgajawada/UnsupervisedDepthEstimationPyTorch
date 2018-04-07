@@ -15,8 +15,7 @@ def main():
     opt = parser.parse_args()
     opt.logdir = opt.logdir+'/'+opt.name
     logger = 'hi'
-
-    best_prec1 = 0
+    best_err1 = 100000000
     print(opt)
 
     # Initialize the model, criterion and the optimizer
@@ -50,18 +49,16 @@ def main():
         if opt.testOnly == False:
             # Train the network over the training data
             trainer.train(train_loader, epoch, opt)
-
         #if opt.tensorboard:
             #logger.scalar_summary('learning_rate', opt.lr, epoch)
-
         # Measure the validation accuracy
-        acc = validator.validate(val_loader, epoch, opt)
-        best_prec1 = max(acc, best_prec1)
-        if best_prec1 == acc:
+        err = validator.validate(val_loader, epoch, opt)
+        best_err1 = min(err, best_err1)
+        if best_err1 == err:
             # Save the new model if the accuracy is better than the previous saved model
             init.save_checkpoint(opt, model, optimizer, best_prec1, epoch)
 
-        print('Best accuracy: [{0:.3f}]\t'.format(best_prec1))
+        print('Best error: [{0:.3f}]\t'.format(best_err1))
 
 if __name__ == '__main__':
     main()
