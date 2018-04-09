@@ -5,60 +5,36 @@ import train
 import utils
 import models.__init__ as init
 import datasets.__datainit__ as init_data
-#from tensorboard_logger import Logger
+import models.dispnet as dispnet
+import models.posenet as posenet
 
 parser = opts.myargparser()
 
 def main():
     global opt, best_prec1
-
     opt = parser.parse_args()
-    opt.logdir = opt.logdir+'/'+opt.name
-    logger = 'hi'
-    best_err1 = 100000000
     print(opt)
-
-    # Initialize the model, criterion and the optimizer
-    model = init.load_model(opt)
-    model, criterion, optimizer = init.setup(model,opt)
-    # Display the model structure
-    print(model)
-
-    # Setup trainer and validation
-    trainer = train.Trainer(model, criterion, optimizer, opt, logger)
-    validator = train.Validator(model, criterion, opt, logger)
-
-    # Load model from a checkpoint if mentioned in opts
+    disp_model = dispnet.Net().cuda()
+    pose_model = posenet.Net().cuda()
+    disp_model, pose_model, optimizer = init.setup(disp_model, pose_model, opt)
+    print(disp_model, pose_model)
+    trainer = train.Trainer(dispnet, posenet, optimizer, opt)
     if opt.resume:
         if os.path.isfile(opt.resume):
-            model, optimizer, opt, best_prec1 = init.resumer(opt, model, optimizer)
+            disp_model, pose_model, optimizer, opt, best_prec1 = init.resumer(opt, disp_model, pose_model, optimizer)
         else:
             print("=> no checkpoint found at '{}'".format(opt.resume))
 
     cudnn.benchmark = True
-
-    # Setup the train and validation data loaders
     dataloader = init_data.load_data(opt)
     train_loader = dataloader.train_loader
-    val_loader = dataloader.val_loader
 
     for epoch in range(opt.start_epoch, opt.epochs):
         utils.adjust_learning_rate(opt, optimizer, epoch)
         print("Starting epoch number:",epoch+1,"Learning rate:", optimizer.param_groups[0]["lr"])
-
         if opt.testOnly == False:
-            # Train the network over the training data
             trainer.train(train_loader, epoch, opt)
-        #if opt.tensorboard:
-            #logger.scalar_summary('learning_rate', opt.lr, epoch)
-        # Measure the validation accuracy
-        err = validator.validate(val_loader, epoch, opt)
-        best_err1 = min(err, best_err1)
-        if best_err1 == err:
-            # Save the new model if the accuracy is better than the previous saved model
-            init.save_checkpoint(opt, model, optimizer, best_prec1, epoch)
-
-        print('Best error: [{0:.3f}]\t'.format(best_err1))
+        init.save_checkpoint(opt, disp_model, pose_model, optimizer, best_prec1, epoch)
 
 if __name__ == '__main__':
     main()

@@ -26,7 +26,7 @@ def myargparser():
     parser.add_argument('--with-gt', action='store_true', help='use ground truth for validation')
 
     parser.add_argument('-p', '--photo-loss-weight', type=float, help='weight for photometric loss', metavar='W', default=1)
-    parser.add_argument('-m', '--mask-loss-weight', type=float, help='weight for explainabilty mask loss', metavar='W', default=0)
+    parser.add_argument('-e', '--mask-loss-weight', type=float, help='weight for explainabilty mask loss', metavar='W', default=0)
     parser.add_argument('-s', '--smooth-loss-weight', type=float, help='weight for disparity smoothness loss', metavar='W', default=0.1)
 
     parser.add_argument('--epochs', required=True, type=int, help='number of total epochs to run')

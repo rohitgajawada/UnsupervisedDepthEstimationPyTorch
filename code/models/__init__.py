@@ -1,34 +1,25 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import models.combnet as combnet
-
 import utils
 import os
+from itertools import chain
 
-"""
-Initialize and return the model, criterion and the optimizer
-"""
-def setup(model, opt):
+def setup(disp_model, pose_model, opt):
 
-    if opt.criterion == "nllLoss":
-        criterion = nn.NLLLoss().cuda()
-
+    parameters = chain(disp_model.parameters(), pose_model.parameters())
     if opt.optimType == 'sgd':
-        optimizer = optim.SGD(model.parameters(), lr = opt.lr, momentum = opt.momentum, nesterov = opt.nesterov, weight_decay = opt.weightDecay)
+        optimizer = optim.SGD(parameters, lr = opt.lr, momentum = opt.momentum, nesterov = opt.nesterov, weight_decay = opt.weightDecay)
     elif opt.optimType == 'adam':
-        optimizer = optim.Adam(model.parameters(), lr = opt.maxlr, weight_decay = opt.weightDecay)
+        optimizer = optim.Adam(parameters, lr = opt.maxlr, weight_decay = opt.weightDecay)
 
     if opt.weight_init:
-        utils.weights_init(model, opt)
+        utils.weights_init(disp_model, opt)
+        utils.weights_init(pose_model, opt)
 
-    return model, criterion, optimizer
+    return disp_model, pose_model, optimizer
 
-"""
-Save the current state as a checkpoint
-"""
 def save_checkpoint(opt, model, optimizer, best_acc, epoch):
-
     state = {
         'epoch': epoch + 1,
         'arch': opt.model_def,
@@ -37,14 +28,9 @@ def save_checkpoint(opt, model, optimizer, best_acc, epoch):
         'optimizer' : optimizer.state_dict(),
     }
     filename = "savedmodels/" + opt.name + ".pth.tar"
-
     torch.save(state, filename)
 
-"""
-Resume from a given checkpoint
-"""
 def resumer(opt, model, optimizer):
-
     if os.path.isfile(opt.resume):
         print("=> loading checkpoint '{}'".format(opt.resume))
         checkpoint = torch.load(opt.resume)
@@ -53,20 +39,4 @@ def resumer(opt, model, optimizer):
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         print("=> loaded checkpoint '{}' (epoch {})".format(opt.resume, checkpoint['epoch']))
-
         return model, optimizer, opt, best_prec1
-
-"""
-Load a model from the specified opts
-"""
-def load_model(opt):
-    if opt.pretrained_file != "":
-        model = torch.load(opt.pretrained_file)
-    else:
-        if opt.model_def == 'combnet':
-            model = combnet.Net()
-            if opt.cuda:
-                model = model.cuda()
-
-
-    return model
