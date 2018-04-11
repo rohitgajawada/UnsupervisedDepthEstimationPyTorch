@@ -35,6 +35,17 @@ def main():
     print(len(train_set), 'samples found')
     print(len(val_set), 'samples found')
 
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.batch_size,
+                                                shuffle=True, num_workers=args.workers,
+                                                pin_memory=True)
+    val_loader = torch.utils.data.DataLoader(val_set, batch_size=args.batch_size,
+                                                shuffle=False, num_workers=args.workers,
+                                                pin_memory=True)
+    if args.epoch == 0:
+        args.epoch_size = len(train_loader)
+
+    # Done loading
+
     opt = parser.parse_args()
     print(opt)
     disp_model = dispnet.Net().cuda()
