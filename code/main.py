@@ -8,6 +8,7 @@ import datasets.__datainit__ as init_data
 import models.dispnet as dispnet
 import models.posenet as posenet
 from datasets.validation_folders import ValidationSet
+from datasets.folders import SequenceFolder
 
 parser = opts.myargparser()
 
