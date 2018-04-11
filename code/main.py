@@ -7,11 +7,34 @@ import models.__init__ as init
 import datasets.__datainit__ as init_data
 import models.dispnet as dispnet
 import models.posenet as posenet
+from datasets.validation_folders import ValidationSet
 
 parser = opts.myargparser()
 
 def main():
     global opt, best_prec1
+
+    # Data loading
+    train_transform = custom_transforms.Compose([
+        custom_transforms.RandomHorizontalFlip(),
+        custom_transforms.RandomScaleCrop(),
+        custom_transforms.ArrayToTensor(),
+        custom_transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                                     std=[0.5, 0.5, 0.5])
+    ])
+    valid_transform = custom_transforms.Compose([custom_transforms.ArrayToTensor(),
+                                                    custom_transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                                                                                std=[0.5, 0.5, 0.5])])
+    print('Loading scenes in', args.data)
+    train_set = SequenceFolder(args.data, transform=train_transform,
+                                seed=args.seed, train=True,
+                                sequence_length=args.sequence_length)
+
+    val_set = ValidationSet(args.data, transform=valid_transform)
+
+    print(len(train_set), 'samples found')
+    print(len(val_set), 'samples found')
+
     opt = parser.parse_args()
     print(opt)
     disp_model = dispnet.Net().cuda()
