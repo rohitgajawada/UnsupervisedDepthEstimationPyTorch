@@ -1,10 +1,11 @@
 from __future__ import division
+import torch
 from torch import nn
 from torch.autograd import Variable
 from inverse_warp import inverse_warp
 
 
-def photometric_reconstruction_loss(tgt_img, ref_imgs, intrinsics, intrinsics_inv, depth, 
+def photometric_reconstruction_loss(tgt_img, ref_imgs, intrinsics, intrinsics_inv, depth,
                                     explainability_mask, pose, rotation_mode='euler',
                                     padding_mode='zeros'):
     def one_scale(depth, explainability_mask):
@@ -18,7 +19,7 @@ def photometric_reconstruction_loss(tgt_img, ref_imgs, intrinsics, intrinsics_in
         tgt_img_scaled = nn.functional.adaptive_avg_pool2d(tgt_img, (h,w))
         ref_imgs_scaled = [nn.functional.adaptive_avg_pool2d(ref_img, (h,w)) for ref_img in ref_imgs]
 
-        intrinsics_scaled = torch.cat((intrinsics[:, 0,2]/downscale, intrinsics[:, 2:]), dim=1)
+        intrinsics_scaled = torch.cat((intrinsics[:, 0:2]/downscale, intrinsics[:, 2:]), dim=1)
         intrinsics_scaled_inv = torch.cat((intrinsics_inv[:,:,0:2]*downscale, intrinsics_inv[:, :, 2:]), dim=2)
 
         for i , ref_img in enumerate(ref_imgs_scaled):

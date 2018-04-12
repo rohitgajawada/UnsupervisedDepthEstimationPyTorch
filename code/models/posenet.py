@@ -1,16 +1,16 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from layers import upconvblock, convblock
+from models.layers import upconvblock, convblock
 
 # img_t = Variable(torch.randn(1, 3, 128, 416))
 # img_tmin = Variable(torch.randn(1, 3, 128, 416))
 # img_tplus = Variable(torch.randn(1, 3, 128, 416)
 
-class PoseExpNet(nn.Module):
+class PoseNet(nn.Module):
 
     def __init__(self, num_ref_imgs=2, output_exp=False):
-        super(PoseExpNet, self).__init__()
+        super(PoseNet, self).__init__()
         self.num_ref_imgs = num_ref_imgs
         self.output_exp = output_exp
         conv_planes = [16, 32, 64, 128, 256, 256, 256]
@@ -42,7 +42,7 @@ class PoseExpNet(nn.Module):
         x = [target_image]
         x.extend(ref_imgs)
         x = torch.cat(x, 1)
-        out_conv1 = self.conv1(input)
+        out_conv1 = self.conv1(x)
         out_conv2 = self.conv2(out_conv1)
         out_conv3 = self.conv3(out_conv2)
         out_conv4 = self.conv4(out_conv3)

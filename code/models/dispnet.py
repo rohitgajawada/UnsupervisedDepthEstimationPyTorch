@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from layers import downsample_convblock, upconvblock, convblock, predict_disp, crop_like
+from models.layers import downsample_convblock, upconvblock, convblock, predict_disp, crop_like
 
 # img_t = Variable(torch.randn(1, 3, 128, 416))
 # img_tmin = Variable(torch.randn(1, 3, 128, 416))

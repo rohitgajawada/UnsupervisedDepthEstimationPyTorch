@@ -1,16 +1,16 @@
 from __future__ import division
 import torch
-from torch.Autograd import Variable
+from torch.autograd import Variable
 
-pixel_cords = None
+pixel_coords = None
 
 
 def set_id_grid(depth):
     # Sets the grid coordinates for the image
-    global pixel_cords
+    global pixel_coords
     b,h,w = depth.size()
     x_range = torch.arange(0,h).view(1,h,1).expand(1,h,w)
-    y_range = torch.arange(0,w).view(1,1,w).expand(1,h.w)
+    y_range = torch.arange(0,w).view(1,1,w).expand(1,h,w)
     ones = torch.ones(1,h,w)
 
     pixel_coords = Variable(torch.stack((y_range, x_range, ones), dim=1)).type_as(depth)
@@ -19,10 +19,10 @@ def set_id_grid(depth):
 def check_sizes(input, input_name, expected):
     conditions = [input.ndimension() == len(expected)]
 
-    for i,size in enumerate(expedted):
+    for i,size in enumerate(expected):
         if size.isdigit():
-            condition.append(input.size(1) == int(size))
-    assert(all(condition), "wrong size for {}, expected {}, got {}".format(input_name, ' x '.join(expected), list(input.size())))
+            conditions.append(input.size(1) == int(size))
+    assert(all(conditions), "wrong size for {}, expected {}, got {}".format(input_name, ' x '.join(expected), list(input.size())))
 
 
 def pix2cam(depth_map, intrinsics_inv):
@@ -34,19 +34,19 @@ def pix2cam(depth_map, intrinsics_inv):
 
     current_pixel_coords = pixel_coords[:,:,:h,:w].expand(b,3,h,w).contiguous().view(b,3,-1) # B x 3 x H*W
     cam_coords = intrinsics_inv.bmm(current_pixel_coords).view(b,3,h,w)
-    return cam_coords * depth.unsqueeze(1)
+    return cam_coords * depth_map.unsqueeze(1)
 
 
 def cam2pix(cam_coords, proj_c2p_rot, proj_c2p_trans, padding_mode):
     b, _, h, w = cam_coords.size()
-    cam_coord_flat = cam_coords.view(b,3,-1)
+    cam_coords_flat = cam_coords.view(b,3,-1)
     if proj_c2p_rot is not None:
         pcoords = proj_c2p_rot.bmm(cam_coords_flat)
     else:
         pcoords = cam_coords_flat
 
-    if proj_c2p_tr is not None:
-        pcoords += proj_c2p_tr
+    if proj_c2p_trans is not None:
+        pcoords += proj_c2p_trans
 
     X = pcoords[:,0]
     Y = pcoords[:,1]
@@ -126,19 +126,19 @@ def inverse_warp(img, depth, pose, intrinsics, intrinsics_inv, rotation_mode='eu
     check_sizes(img, 'img', 'B3HW');
     check_sizes(depth, 'depth', 'BHW')
     check_sizes(pose, 'pose', 'B6')
-    check_sizes(intrinsics, 'intrinsics' 'B33')
+    check_sizes(intrinsics, 'intrinsics', 'B33')
     check_sizes(intrinsics_inv, 'intrinsics', 'B33')
 
     assert(intrinsics_inv.size() == intrinsics.size())
 
     batch_size, _, img_height, img_width = img.size()
 
-    cam_coords = pixel2cam(depth, intrinsics_inv)
-    pose_mat = pose_vec3mat(pose, rotation_mode)
+    cam_coords = pix2cam(depth, intrinsics_inv)
+    pose_mat = pose_vec2mat(pose, rotation_mode)
 
     proj_cam_to_src_pixel = intrinsics.bmm(pose_mat)
 
-    src_pixel_coords = cam2pixel(cam_coords, proj_cam_to_src_pixel[:,:,:3], proj_cam_to_src_pixel[:,:,-1:], padding_mode)
+    src_pixel_coords = cam2pix(cam_coords, proj_cam_to_src_pixel[:,:,:3], proj_cam_to_src_pixel[:,:,-1:], padding_mode)
     projected_img = torch.nn.functional.grid_sample(img, src_pixel_coords, padding_mode=padding_mode)
 
     return projected_img

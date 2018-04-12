@@ -10,27 +10,27 @@ from losses import photometric_reconstruction_loss, explainability_loss, smooth_
 import custom_transforms
 
 class Trainer():
-    def __init__(self, disp_model, pose_model, criterion, optimizer, opt):
+    def __init__(self, disp_model, pose_model, optimizer, opt):
         self.disp_model = disp_model
         self.pose_model = pose_model
-        self.criterion = criterion
         self.optimizer = optimizer
         self.batch_time = AverageMeter()
         self.data_time = AverageMeter()
         self.losses = AverageMeter()
 
     def train(self, trainloader, epoch, opt):
-        self.model.train()
         self.losses.reset()
         self.data_time.reset()
         self.batch_time.reset()
         end = time.time()
+        self.disp_model.train()
+        self.pose_model.train()
         for i, data in enumerate(trainloader, 0):
             self.optimizer.zero_grad()
             if opt.cuda:
                 target_imgs, ref_imgs, intrinsics, intrinsics_inv = data
                 target_imgs = Variable(target_imgs.cuda(async=True))
-                ref_imgs = Variable(ref_imgs.cuda(async=True))
+                ref_imgs = [Variable(img.cuda(async=True)) for img in ref_imgs]
                 intrinsics = Variable(intrinsics.cuda(async=True))
                 intrinsics_inv = Variable(intrinsics_inv.cuda(async=True))
 
@@ -52,7 +52,7 @@ class Trainer():
             self.batch_time.update(time.time() - end)
             end = time.time()
 
-            if i % opt.printfreq == 0 and opt.verbose == True:
+            if i % opt.printfreq == 0:
                 print('Epoch: [{0}][{1}/{2}]\t'
                       'Time {batch_time.avg:.3f} ({batch_time.sum:.3f})\t'
                       'Data {data_time.avg:.3f} ({data_time.sum:.3f})\t'

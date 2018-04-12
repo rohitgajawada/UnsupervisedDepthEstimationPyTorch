@@ -14,9 +14,9 @@ def predict_disp(in_planes):
         nn.Sigmoid()
     )
 
-def convblock(in_planes, out_planes):
+def convblock(in_planes, out_planes, kernel_size=3):
     return nn.Sequential(
-        nn.Conv2d(in_planes, out_planes, kernel_size=3, padding=1),
+        nn.Conv2d(in_planes, out_planes, kernel_size=kernel_size, padding=1),
         nn.ReLU(inplace=True)
     )
 
