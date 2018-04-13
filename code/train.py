@@ -39,10 +39,15 @@ class Trainer():
             depths = [1 / disp for disp in disparities]
             explainability_mask, pose = self.pose_model(target_imgs, ref_imgs)
 
+            print("depth size: ", len(depths))
+            print("explain size: ", len(explainability_mask))
+            print([item.size() for item in depths])
+            print([item.size() for item in explainability_mask])
+
             photoloss = photometric_reconstruction_loss(target_imgs, ref_imgs, intrinsics, intrinsics_inv, depths, explainability_mask, pose, opt.rotation_mode, opt.padding_mode)
             exploss = explainability_loss(explainability_mask)
             smoothloss = smooth_loss(disparities)
-            totalloss = opt.p * photoloss + opt.e * exploss + opt.s * smoothloss
+            totalloss = opt.photo_loss_weight * photoloss + opt.mask_loss_weight * exploss + opt.smooth_loss_weight * smoothloss
 
             totalloss.backward()
             self.optimizer.step()

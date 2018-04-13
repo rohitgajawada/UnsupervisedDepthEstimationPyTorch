@@ -59,8 +59,8 @@ def explainability_loss(mask):
     loss = 0
     for mask_scaled in mask:
         # Requires mask to be an autograd Variable
-        ones = Variable(torch.ones(mask_scaled.size()))
-        loss += nn.functional.binary_cross_entropy(mask, ones)
+        ones = Variable(torch.ones(1)).expand_as(mask_scaled).type_as(mask_scaled)
+        loss += nn.functional.binary_cross_entropy(mask_scaled, ones)
     return loss
 
 

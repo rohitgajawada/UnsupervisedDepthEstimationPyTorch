@@ -1,11 +1,25 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from models.layers import upconvblock, convblock
+# from models.layers import upconvblock, convblock
 
 # img_t = Variable(torch.randn(1, 3, 128, 416))
 # img_tmin = Variable(torch.randn(1, 3, 128, 416))
 # img_tplus = Variable(torch.randn(1, 3, 128, 416)
+
+
+def convblock(in_planes, out_planes, kernel_size=3):
+    return nn.Sequential(
+            nn.Conv2d(in_planes, out_planes, kernel_size=kernel_size, padding=(kernel_size-1)//2, stride=2),
+            nn.ReLU(inplace=True)
+        )
+
+def upconvblock(in_planes, out_planes):
+    return nn.Sequential(
+            nn.ConvTranspose2d(in_planes, out_planes, kernel_size=4, stride=2, padding=1),
+            nn.ReLU(inplace=True)
+        )
+
 
 class PoseNet(nn.Module):
 
