@@ -16,28 +16,28 @@ def myargparser():
     parser.add_argument('--verbose', action='store_true')
     parser.add_argument('--workers', default=4, type=int, help='number of data loading workers (default: 4)')
 
-    parser.add_argument('--rotation-mode', type=str, choices=['euler', 'quat'], default='euler', help='rotation mode for PoseExpnet : euler (yaw,pitch,roll) or quaternion (last 3 coefficients)')
+    parser.add_argument('--rotation-mode', type=str, choices=['euler', 'quat'], default='euler', help='rotation mode for PoseNet : euler (yaw,pitch,roll) or quaternion (last 3 coefficients)')
     parser.add_argument('--padding-mode', type=str, choices=['zeros', 'border'], default='zeros', help='padding mode for image warping')
     parser.add_argument('--with-gt', action='store_true', help='use ground truth for validation')
 
     parser.add_argument('-p', '--photo-loss-weight', type=float, help='weight for photometric loss', metavar='W', default=1.0)
-    parser.add_argument('-e', '--mask-loss-weight', type=float, help='weight for explainabilty mask loss', metavar='W', default=0.0)
+    parser.add_argument('-e', '--mask-loss-weight', type=float, help='weight for explainabilty mask loss', metavar='W', default=0.2)
     parser.add_argument('-s', '--smooth-loss-weight', type=float, help='weight for disparity smoothness loss', metavar='W', default=0.1)
 
     parser.add_argument('--epochs', default=100, type=int, help='number of total epochs to run')
     parser.add_argument('--epoch', default=0, type=int, help='number of total epochs to run')
-    parser.add_argument('--batch-size', default=1, type=int, help='mini-batch size (default: 128)')
-    parser.add_argument('--testbatchsize', default=16, type=int, help='input batch size for testing (default: 1000)')
-    parser.add_argument('--printfreq', default=2, type=int, help='print frequency (default: 10)')
+    parser.add_argument('--batch-size', default=4, type=int, help='mini-batch size (default: 128)')
+    parser.add_argument('--testbatchsize', default=4, type=int, help='input batch size for testing (default: 1000)')
+    parser.add_argument('--printfreq', default=100, type=int, help='print frequency (default: 10)')
     parser.add_argument('--learningratescheduler', default='decayscheduler', type=str, help='LR Scheduler. Options:'+str(lrscheduler_choices))
 
     parser.add_argument('--decayinterval', default=10, type=int, help='decays by a power of decay_var in these epochs')
     parser.add_argument('--decaylevel', default=1.15, type=int, help='decays by a power of decaylevel')
     parser.add_argument('--optimType', default='adam', choices=optim_choices, type=str, help='Optimizers. Options:'+str(optim_choices))
 
-    parser.add_argument('--maxlr', default=1e-4, type=float, help='initial learning rate')
+    parser.add_argument('--maxlr', default=2e-4, type=float, help='initial learning rate')
     parser.add_argument('--lr', type=float, help='initial learning rate')
-    parser.add_argument('--minlr', default=1e-5, type=float, help='initial learning rate')
+    parser.add_argument('--minlr', default=2e-6, type=float, help='initial learning rate')
 
     parser.add_argument('--nesterov', action='store_true', help='nesterov momentum')
     parser.add_argument('--momentum', default=0.9, type=float, help='momentum (Default: 0.9)')

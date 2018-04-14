@@ -8,6 +8,7 @@ import time
 from inverse_warp import inverse_warp
 from losses import photometric_reconstruction_loss, explainability_loss, smooth_loss, compute_errors
 import custom_transforms
+import sys
 
 class Trainer():
     def __init__(self, disp_model, pose_model, optimizer, opt):
@@ -59,6 +60,7 @@ class Trainer():
                       'Loss {loss.avg:.3f}\t'.format(
                        epoch, i, len(trainloader), batch_time=self.batch_time,
                        data_time= self.data_time, loss=self.losses))
+            sys.stdout.flush()
 
         print('Train: [{0}]\t'
               'Time {batch_time.sum:.3f}\t'

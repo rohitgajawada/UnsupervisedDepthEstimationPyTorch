@@ -88,9 +88,9 @@ class DispNet(nn.Module):
         out_conv4 = self.conv4(out_conv3)
         out_conv5 = self.conv5(out_conv4)
         out_conv6 = self.conv6(out_conv5)
-        print(out_conv6.size())
+        #print(out_conv6.size())
         out_conv7 = self.conv7(out_conv6)
-        print(out_conv7.size())
+        #print(out_conv7.size())
 
         out_upconv7 = crop_like(self.upconv7(out_conv7), out_conv6)
         concat7 = torch.cat((out_upconv7, out_conv6), 1)
