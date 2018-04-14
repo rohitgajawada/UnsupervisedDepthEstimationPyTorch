@@ -26,7 +26,7 @@ def save_checkpoint(opt, disp_model, pose_model, optimizer, epoch):
         # 'arch': opt.model_def,
         # 'state_dict': model.state_dict(),
         'disp_state_dict': disp_model.state_dict(),
-        'pose_state_dict': pose_model_state_dict(),
+        'pose_state_dict': pose_model.state_dict(),
         # 'best_prec1': best_acc,
         'optimizer' : optimizer.state_dict(),
     }
