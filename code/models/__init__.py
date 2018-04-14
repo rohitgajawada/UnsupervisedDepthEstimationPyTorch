@@ -19,12 +19,13 @@ def setup(disp_model, pose_model, opt):
 
     return disp_model, pose_model, optimizer
 
-def save_checkpoint(opt, model, optimizer, best_acc, epoch):
+# def save_checkpoint(opt, model, optimizer, best_acc, epoch):
+def save_checkpoint(opt, model, optimizer, epoch):
     state = {
         'epoch': epoch + 1,
         'arch': opt.model_def,
         'state_dict': model.state_dict(),
-        'best_prec1': best_acc,
+        # 'best_prec1': best_acc,
         'optimizer' : optimizer.state_dict(),
     }
     filename = "savedmodels/" + opt.name + ".pth.tar"
@@ -35,8 +36,9 @@ def resumer(opt, model, optimizer):
         print("=> loading checkpoint '{}'".format(opt.resume))
         checkpoint = torch.load(opt.resume)
         opt.start_epoch = checkpoint['epoch']
-        best_prec1 = checkpoint['best_prec1']
+        # best_prec1 = checkpoint['best_prec1']
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
         print("=> loaded checkpoint '{}' (epoch {})".format(opt.resume, checkpoint['epoch']))
-        return model, optimizer, opt, best_prec1
+        # return model, optimizer, opt, best_prec1
+        return model, optimizer, opt

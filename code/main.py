@@ -55,7 +55,8 @@ def main():
     trainer = train.Trainer(disp_model, pose_model, optimizer, opt)
     if opt.resume:
         if os.path.isfile(opt.resume):
-            disp_model, pose_model, optimizer, opt, best_prec1 = init.resumer(opt, disp_model, pose_model, optimizer)
+            # disp_model, pose_model, optimizer, opt, best_prec1 = init.resumer(opt, disp_model, pose_model, optimizer)
+            disp_model, pose_model, optimizer, opt = init.resumer(opt, disp_model, pose_model, optimizer)
         else:
             print("=> no checkpoint found at '{}'".format(opt.resume))
 
@@ -65,7 +66,8 @@ def main():
         print("Starting epoch number:",epoch+1,"Learning rate:", optimizer.param_groups[0]["lr"])
         if opt.testOnly == False:
             trainer.train(train_loader, epoch, opt)
-        init.save_checkpoint(opt, disp_model, pose_model, optimizer, best_prec1, epoch)
+        # init.save_checkpoint(opt, disp_model, pose_model, optimizer, best_prec1, epoch)
+        init.save_checkpoint(opt, disp_model, pose_model, optimizer, epoch)
 
 if __name__ == '__main__':
     main()
