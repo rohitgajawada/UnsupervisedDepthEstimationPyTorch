@@ -23,7 +23,7 @@ def setup(disp_model, pose_model, opt):
 def save_checkpoint(opt, disp_model, pose_model, optimizer, epoch):
     state = {
         'epoch': epoch + 1,
-        'arch': opt.model_def,
+        # 'arch': opt.model_def,
         # 'state_dict': model.state_dict(),
         'disp_state_dict': disp_model.state_dict(),
         'pose_state_dict': pose_model_state_dict(),
